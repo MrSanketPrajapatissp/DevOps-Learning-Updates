@@ -155,8 +155,9 @@ Build Now
 # 📸 Screenshots
 
 ## Jenkins Build Success Console Output
+<img width="1920" height="1080" alt="Screenshot (133)" src="https://github.com/user-attachments/assets/fe2311af-e887-448f-97d0-63f877345467" />
 
-![Jenkins Console Output](screenshots/jenkins-build-success.png)
+![Jenkins Console Output]
 
 Shows successful file transfer from Jenkins to the remote EC2 instance.
 
@@ -164,7 +165,7 @@ Shows successful file transfer from Jenkins to the remote EC2 instance.
 
 ## AWS EC2 Instances (Jenkins Server & Test Server)
 
-![AWS EC2 Instances]<img width="1920" height="1080" alt="Screenshot (134)" src="https://github.com/user-attachments/assets/1859dd7d-9619-4dc0-a52d-7944b6feb47e" />
+<img width="1920" height="1080" alt="Screenshot (134)" src="https://github.com/user-attachments/assets/1859dd7d-9619-4dc0-a52d-7944b6feb47e" />
 
 
 Two EC2 instances used in this project:
@@ -221,5 +222,5 @@ Destination:
 ---
 
 # 👨‍💻 Author
-
+Sanket Prajapati
 DevOps Learning Project – Jenkins & AWS
