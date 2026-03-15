@@ -71,6 +71,27 @@ Start SSH agent:
 eval $(ssh-agent -s)
 ```
 
+Create MyKey.pem file:
+
+```bash
+vi Mykey.pem
+```
+paste here jenkins server key which you download at the time of Ec2 Instance launch.
+
+Change the Permission of above pem file: 
+
+```bash
+chmod 400 Mykey.pem
+```
+
+Change the directory to /root/ssh
+
+```bash
+cd /root/.ssh/
+```
+
+
+
 Add private key:
 
 ```bash
