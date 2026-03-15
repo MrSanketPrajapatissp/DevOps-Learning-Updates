@@ -12,7 +12,7 @@ The setup uses **two Amazon EC2 instances**:
 The Jenkins job automatically transfers files from the Jenkins workspace to the remote server **without requiring a password**.
 
 ---
-Linux Package Installation Commands (Different Distributions)
+## 📌 Linux Package Installation Commands (Different Distributions)
 
 Different Linux distributions use different package managers to install software.
 
@@ -23,14 +23,15 @@ Amazon Linux	amazon-linux-extras	sudo amazon-linux-extras install package-name
 Examples
 
 Install Git on Ubuntu:
-
+```
 sudo apt update
 sudo apt install git
 
 Install Git on RedHat / CentOS:
 
 sudo yum install git
-
+```
+---
 Install packages on Amazon Linux using Amazon Linux Extras:
 
 sudo amazon-linux-extras install docker
