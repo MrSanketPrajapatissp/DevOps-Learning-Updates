@@ -16,10 +16,10 @@ The Jenkins job automatically transfers files from the Jenkins workspace to the 
 
 Different Linux distributions use different package managers to install software.
 
-Linux Distribution	Package Manager	Example Command
-Ubuntu / Debian	apt	sudo apt install package-name
-RedHat / CentOS	yum or dnf	sudo yum install package-name
-Amazon Linux	amazon-linux-extras	sudo amazon-linux-extras install package-name
+1. Linux Distribution	Package Manager	Example Command
+2. Ubuntu / Debian	apt	sudo apt install package-name
+3. RedHat / CentOS	yum or dnf	sudo yum install package-name
+4. Amazon Linux	amazon-linux-extras	sudo amazon-linux-extras install package-name
 Examples
 
 Install Git on Ubuntu:
