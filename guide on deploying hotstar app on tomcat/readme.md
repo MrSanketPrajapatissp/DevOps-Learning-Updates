@@ -88,9 +88,6 @@ http://<EC2-IP>:8080
 https://github.com/MrSanketPrajapatissp/java-project-maven-new.git
 ```
 
-### 📸 Screenshot
-
-👉 *(Add Git config screenshot)*
 
 ---
 
@@ -251,9 +248,7 @@ Add:
 * Secret Key
 * ID: `aws-s3-creds`
 
-### 📸 Screenshot
 
-👉 *(Add credentials screenshot)*
 
 ---
 
@@ -296,9 +291,7 @@ Add:
 * Region: `ap-south-1`
 * Credentials: `aws-s3-creds`
 
-### 📸 Screenshot
 
-👉 *(Add S3 profile config screenshot)*
 
 ---
 
@@ -333,24 +326,28 @@ Add your screenshots here:
 
 ## 🔹 Jenkins Plugins
 
-👉 *(Add plugin screenshots)*
+<img width="1920" height="1080" alt="Screenshot (152)" src="https://github.com/user-attachments/assets/5c81e645-1995-4211-95b3-1d5f41865f5e" />
+<img width="1920" height="1080" alt="Screenshot (153)" src="https://github.com/user-attachments/assets/3240ba21-6f76-4edf-9caa-1faafd53ad2f" />
+<img width="1920" height="1080" alt="Screenshot (154)" src="https://github.com/user-attachments/assets/cac84d7f-8d1c-4786-a181-ecfeb78bf9fe" />
 
-## 🔹 AWS Credentials
 
-👉 *(Add credential screenshot)*
 
 ## 🔹 S3 Profile
 
-👉 *(Add system config screenshot)*
+👉 <img width="1920" height="1080" alt="Screenshot (160)" src="https://github.com/user-attachments/assets/ee10829e-88ab-4a6d-b121-640d45dfa54f" />
+
 
 ## 🔹 Build Success
 
-👉 *(Add Jenkins build success screenshot)*
+
+👉 <img width="1920" height="1080" alt="Screenshot (157)" src="https://github.com/user-attachments/assets/e1cbe221-7101-4248-b452-a4ecba70556d" />
+
 
 ## 🔹 Application Output
 
-👉 *(Add Hotstar UI screenshot)*
 
+<img width="1920" height="1080" alt="Screenshot (159)" src="https://github.com/user-attachments/assets/ea2b613c-3d94-4a6a-b739-dbb3717c2c1c" />
+<img width="1920" height="1080" alt="Screenshot (158)" src="https://github.com/user-attachments/assets/c8cfefd6-178a-42d2-bf2b-c930cc0819db" />
 ---
 
 # 🎯 Final Outcome
