@@ -58,7 +58,10 @@ ansible --version
 
 ## 📸 Screenshots
 
-(Add your screenshots here)
+
+
+<img width="1920" height="1080" alt="Screenshot (166)" src="https://github.com/user-attachments/assets/700aaa24-fdba-4948-815a-a6f863bff1a9" />
+<img width="1920" height="1080" alt="Screenshot (164)" src="https://github.com/user-attachments/assets/a0e3dcf4-c0fa-4339-aa49-da8fcd226c15" />
 
 - Ansible installation
 - Version check
