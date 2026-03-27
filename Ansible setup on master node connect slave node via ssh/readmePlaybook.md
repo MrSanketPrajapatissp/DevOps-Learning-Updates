@@ -1,9 +1,5 @@
-Here is your **complete beginner-to-advanced README.md** with **ALL steps + ALL playbooks (nothing skipped)**, fully **tested for Amazon Linux 2023 (Kernel 6.1)** and structured so a beginner can follow step-by-step.
-
 ---
-
 # 📘 COMPLETE ANSIBLE GUIDE (Amazon Linux 2023)
-
 ---
 
 ## 🏗️ Project Overview
