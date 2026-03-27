@@ -534,6 +534,316 @@ ansible all -m setup
 
 ---
 
+
+Great — you’ve shared more advanced content 👍
+Now I’ll **clean, correct, and convert ALL of this into production-ready Ansible code for Amazon Linux 2023** and format it so you can directly include it in your README.
+
+---
+
+# 📜 ADVANCED PLAYBOOKS (FIXED & AL2023 COMPATIBLE)
+
+---
+
+# 🔁 1. Loop Playbook (Install Softwares)
+
+⚠️ Fixes applied:
+
+* `yum` → `dnf`
+* `with_items` → `loop`
+* Proper YAML indentation
+
+```yaml
+---
+- name: LOOP Playbook - Install Softwares
+  hosts: all
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Installing Softwares
+      dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - tree
+        - docker
+        - maven
+        - httpd
+```
+
+---
+
+# 👥 2. Loop Playbook (Create Users)
+
+```yaml
+---
+- name: Creating Users using Loop
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Creating Users
+      user:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - maria
+        - riya
+        - raj
+        - raja
+        - tommy
+```
+
+---
+
+## ❌ Remove Users (Command)
+
+```bash
+sed -i 's/present/absent/g' loopuser.yml
+```
+
+---
+
+## 🔍 Check Users
+
+```bash
+ansible all -a "cat /etc/passwd"
+```
+
+---
+
+# 🔔 3. Handlers (Install Apache)
+
+⚠️ Fixes:
+
+* `notify` name matches handler
+* indentation fixed
+* `dnf` used
+
+```yaml
+---
+- name: Notify and Handlers - Install Apache
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Installing Apache
+      dnf:
+        name: httpd
+        state: present
+      notify: Start Apache Service
+
+  handlers:
+    - name: Start Apache Service
+      service:
+        name: httpd
+        state: started
+```
+
+---
+
+# ❌ 4. Handlers (Remove Apache with Ignore Errors)
+
+⚠️ Fixes:
+
+* corrected syntax (`ignore_errors`)
+* corrected YAML spacing
+
+```yaml
+---
+- name: Notify and Handlers - Remove Apache
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Uninstalling Apache
+      dnf:
+        name: httpd
+        state: absent
+      notify: Restart Apache Service
+
+  handlers:
+    - name: Restart Apache Service
+      service:
+        name: httpd
+        state: started
+      ignore_errors: yes
+```
+
+---
+
+# ⚙️ 5. Shell vs Command vs Raw
+
+⚠️ AL2023 Fix:
+
+* Replace `yum` → `dnf`
+
+```yaml
+---
+- name: Shell vs Command vs Raw
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Apache using shell
+      shell: dnf install httpd -y
+
+    - name: Install Git using command
+      command: dnf install git -y
+
+    - name: Install Maven using raw
+      raw: dnf install maven -y
+```
+
+---
+
+# 🔀 6. Conditional Playbook (when)
+
+```yaml
+---
+- name: Conditions Example
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Apache on RedHat family
+      dnf:
+        name: httpd
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install Apache on Debian family
+      apt:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
+```
+
+---
+
+# 🧩 7. Jinja2 Template Playbook (Nginx)
+
+⚠️ IMPORTANT for AL2023:
+
+* ❌ remove `amazon-linux-extras`
+* ✅ use direct `dnf`
+
+```yaml
+---
+- name: Deploy Nginx Config using Template
+  hosts: all
+  become: yes
+
+  vars:
+    nginx_port: 80
+    server_name: "boom.com"
+    web_root: "/usr/share/nginx/html"
+
+  tasks:
+    - name: Install Nginx
+      dnf:
+        name: nginx
+        state: present
+
+    - name: Copy Nginx Config using Template
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+```
+
+---
+
+# 🧱 8. Roles Structure (Production Standard)
+
+## 📁 Folder Structure
+
+```bash
+roles/
+ ├── pkgs/
+ │    └── tasks/
+ │         └── main.yml
+ ├── users/
+ ├── webserver/
+```
+
+---
+
+## 📦 roles/pkgs/tasks/main.yml
+
+```yaml
+---
+- name: Install packages
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - tree
+    - docker
+    - maven
+```
+
+---
+
+## 🎯 master.yml
+
+```yaml
+---
+- name: Master Playbook
+  hosts: all
+  become: yes
+
+  roles:
+    - pkgs
+    - users
+    - webserver
+```
+
+---
+
+# ⏳ 9. Async & Polling
+
+```yaml
+---
+- name: Long Running Task Example
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install heavy software
+      dnf:
+        name: httpd
+        state: present
+      async: 300
+      poll: 10
+```
+
+---
+---
+
+# 🚀 Final Tip
+
+Run any playbook:
+
+```bash
+ansible-playbook -i hosts.ini playbook.yml
+```
+
+Dynamic variables:
+
+```bash
+ansible-playbook dynamicvar.yml --extra-vars "a=git b=maven"
+```
+
+---
+
 # 🎯 Final Outcome
 
 After completing this guide, you can:
@@ -542,5 +852,5 @@ After completing this guide, you can:
 ✅ Connect Control → Client
 ✅ Execute all playbooks
 ✅ Automate real infrastructure
-
+## Author - Sanket Prajapati
 ---
