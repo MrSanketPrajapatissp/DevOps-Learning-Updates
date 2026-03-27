@@ -95,20 +95,28 @@ hostnamectl set-hostname dev2
 
 ---
 
-## 🔐 Step 5: Enable Root Login
+## 🔐 Step 5: Enable Root Login before that you have to enable multiexecution mode on MobaXterm to set root password for all host 
 
+#set simple password eg: root124, or root12345, etc
 ```bash
+paswd root 
 vi /etc/ssh/sshd_config
 ```
 
-### Changes:
+### Changes: for sshd_config file
 
 ```bash
-PermitRootLogin yes
-PasswordAuthentication yes
+PermitRootLogin yes  # line no. 40
+PasswordAuthentication yes # line no. 65
 ```
 
 ---
+
+## To view Private IP of client 
+
+```bash
+hostname -i
+```
 
 ### ❌ Issue Faced
 
@@ -143,7 +151,7 @@ systemctl restart sshd
 
 ---
 
-## ⚙️ Step 6: SSH Key Setup
+## ⚙️ Step 6: SSH Key Setup before this step exit from multiexe mode from MobaXterm
 
 ### Generate Key (on AnsibleMaster)
 
@@ -156,7 +164,7 @@ ssh-keygen
 ### Copy Key to Nodes
 
 ```bash
-ssh-copy-id root@<IP>
+ssh-copy-id root@<Private IP client host>
 ```
 
 ---
@@ -210,7 +218,7 @@ PasswordAuthentication yes
 
 ---
 
-## ⚙️ Step 7: Inventory File
+## ⚙️ Step 7: Create Inventory File on Master Ansible node
 
 ### ❌ Issue Faced
 
@@ -229,7 +237,7 @@ vi /etc/ansible/hosts
 
 ---
 
-### Inventory Example
+### Inventory Example (Add private IP of Client on Master Node in /etc/ansible/hosts file)
 
 ```ini
 [prod]
