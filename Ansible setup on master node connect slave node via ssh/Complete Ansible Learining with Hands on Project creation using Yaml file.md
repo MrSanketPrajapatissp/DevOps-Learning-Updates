@@ -910,6 +910,19 @@ After completing this:
 
 ---
 
+If you want next step 🚀
+I can help you:
+
+- Convert this into **real DevOps project (GitHub + README + diagrams)**
+- Add **Jenkins CI/CD pipeline**
+- Add **Terraform + Ansible integration**
+
+Just tell me 👍
+Perfect 👍 — this is an **important DevOps concept (bulk modification using `sed` + `find`)**.
+I’ll **add this as a clean, beginner-friendly section in your README.md**, fix syntax, and explain clearly.
+
+---
+
 # 🧹 STEP 11: Uninstall Everything (Bulk Change in Playbooks)
 
 Sometimes you want to **remove all installed packages/users/services** using the same playbooks.
@@ -1061,7 +1074,100 @@ This step shows:
 ✔ Idempotency in Ansible
 ✔ Bulk automation using Linux commands
 ✔ Real DevOps troubleshooting skills
+
 ---
+
+If you want next level 🚀
+I can help you:
+
+- Add **rollback mechanism**
+- Convert into **CI/CD pipeline (Jenkins)**
+- Build **production-ready DevOps project**
+
+Just tell me 👍
+Perfect 👍 — this is an **important DevOps concept (bulk modification using `sed` + `find`)**.
+I’ll **add this as a clean, beginner-friendly section in your README.md**, fix syntax, and explain clearly.
+
+---
+
+# 🧹 STEP 11: Uninstall Everything (Bulk Change in Playbooks)
+
+Sometimes you want to **remove all installed packages/users/services** using the same playbooks.
+
+Instead of manually editing each file ❌
+We use **automation (sed + find)** ✅
+
+---
+
+## 🔁 🔹 Method 1: Modify Single File
+
+Example (for one file):
+
+```bash
+sed -i 's/present/absent/g' roles/pkgs/tasks/main.yml
+```
+
+### 📌 What it does:
+
+- `present` ➝ `absent`
+- Converts **install → uninstall**
+
+---
+
+## 🔁 🔹 Method 2: Modify ALL Playbooks (Recommended 🚀)
+
+```bash
+find . -type f -name "*.yml" -exec sed -i 's/present/absent/g' {} \;
+```
+
+---
+
+## 🔍 Explanation (Important for Interview)
+
+### 🔹 `find .`
+
+- Search in **current directory**
+
+### 🔹 `-type f`
+
+- Select only **files** (not folders)
+
+### 🔹 `-name "*.yml"`
+
+- Target only **Ansible playbooks**
+
+### 🔹 `-exec`
+
+- Execute command on each file
+
+### 🔹 `sed -i`
+
+- Edit file **in-place**
+
+### 🔹 `'s/present/absent/g'`
+
+- Replace:
+  - `present` ➝ `absent`
+  - `g` = global (all occurrences)
+
+### 🔹 `{}`
+
+- Represents each file found
+
+### 🔹 `\;`
+
+- Ends the exec command
+
+---
+
+## ⚠️ Important Tip
+
+Before running, check files:
+
+```bash
+find . -type f -name "*.yml"
+```
+
 ---
 
 ## ▶️ STEP 12: Run Playbook (Uninstall Mode)
@@ -1125,6 +1231,17 @@ Take backup before replacing:
 ```bash
 cp -r roles roles_backup
 ```
+
+---
+
+# 🎯 Final Concept
+
+This step shows:
+
+✔ Idempotency in Ansible
+✔ Bulk automation using Linux commands
+✔ Real DevOps troubleshooting skills
+
 
 ---
 
@@ -1279,18 +1396,6 @@ You have now learned:
 ✅ Use Linux automation (`sed`, `find`)
 ✅ Apply real DevOps workflow
 
----
-
-If you want next step 🚀
-I can help you:
-
-- Build **full CI/CD pipeline (Jenkins + Ansible)**
-- Deploy on **AWS with Load Balancer**
-- Create **resume-ready DevOps project with GitHub**
-
-Just tell me 👍
-Great 👍 — this is the **Ansible Vault section**, very important for **real DevOps + security (interview favorite)**.
-I’ll convert your commands into a **clean README.md section with correct syntax, flow, and explanation**.
 
 ---
 
@@ -1466,14 +1571,6 @@ ansible-vault decrypt secret .txt
 ansible-vault decrypt secret.txt
 ```
 
----
-
-# 🚀 Best Practices
-
-✔ Never store passwords in plain text
-✔ Always use Vault for secrets
-✔ Use `.gitignore` for vault password file
-✔ Use strong passwords (not `root123` in real projects 😄)
 
 ---
 
@@ -1486,18 +1583,6 @@ You now know:
 ✅ Use secrets in playbooks
 ✅ Follow real DevOps security practices
 
----
-
-# 🚀 Next Level
-
-If you want, I can help you:
-
-- Integrate **Vault with CI/CD (Jenkins)**
-- Use **AWS Secrets Manager + Ansible**
-- Build **production-grade secure pipeline**
-
-Just tell me 👍
-Great 👍 — this is another important **Ansible Vault command** that should be added to your README.
 
 ---
 
@@ -1578,194 +1663,4 @@ ansible-vault decrypt secret.txt
 
 ---
 
-Great 👍 — your content had multiple syntax issues, mixed sections, and formatting problems.
-I’ve **cleaned, corrected, and structured it properly** so you can directly use this in your README or project.
 
----
-
-# ⏳ ASYNCHRONOUS & POLLING (Clean Explanation)
-
-## 📌 Concept
-
-By default, Ansible runs tasks **synchronously**:
-
-➡️ Task 1 → completes → Task 2 starts
-
-But for **long-running tasks** (installations, backups, etc.), this may cause **timeouts**.
-
----
-
-## 🚀 Solution: Async + Poll
-
-* `async` → maximum time allowed (seconds)
-* `poll` → how often Ansible checks task status
-
----
-
-## ✅ Correct Playbook (Fixed Syntax)
-
-```yaml
----
-- name: Async and Poll Playbook
-  hosts: all
-  ignore_errors: yes
-
-  tasks:
-    - name: Simulate long task
-      command: sleep 30
-      async: 20
-      poll: 5
-
-    - name: Install Git
-      dnf:
-        name: git
-        state: present
-```
-
----
-
-## 🔍 Behavior
-
-| Case                       | Result    |
-| -------------------------- | --------- |
-| Task completes within time | ✅ Success |
-| Task exceeds time          | ❌ Fails   |
-
----
-
-## 🔄 Fire & Forget Mode
-
-```yaml
-async: 60
-poll: 0
-```
-
-✔ Runs in background
-✔ Ansible does not wait
-
----
-
-# 🚀 MINI PROJECT: Deploy Application using Ansible
-
----
-
-## 🎯 Goal
-
-* Install Apache (httpd)
-* Install Git
-* Clone application from GitHub
-* Deploy website
-
----
-
----
-
-## ✅ Final Working Playbook (`miniproject.yml`)
-
-```yaml
----
-- name: Mini Project - Deploy Web Application
-  hosts: all
-  become: yes
-
-  tasks:
-
-    - name: Install HTTPD
-      dnf:
-        name: httpd
-        state: present
-
-    - name: Start HTTPD
-      service:
-        name: httpd
-        state: started
-        enabled: yes
-
-    - name: Install Git
-      dnf:
-        name: git
-        state: present
-
-    - name: Clone Code from GitHub
-      git:
-        repo: https://github.com/MrSanketPrajapatissp/amazon-application.git
-        dest: /var/www/html
-        force: yes
-
-    - name: Simulate delay (Async Task)
-      command: sleep 30
-      async: 20
-      poll: 10
-      ignore_errors: yes
-```
-
----
-
-## ▶️ Run Playbook
-
-```bash
-ansible-playbook -i hosts.ini miniproject.yml
-```
-
----
-
-## 🌐 Access Application
-
-Open in browser:
-
-```
-http://<EC2_PUBLIC_IP>
-```
-
----
-
-## 🔍 Verification Commands
-
-```bash
-# Check Apache
-ansible all -a "systemctl status httpd"
-
-# Check files
-ansible all -a "ls /var/www/html"
-
-# Test website
-curl http://<PRIVATE_IP>
-```
-
----
-
-# ⚠️ Common Mistakes (From Your Code)
-
-❌ `poll:` (empty)
-✔ must be like → `poll: 5`
-
-❌ `command: sleep` (broken line)
-✔ `command: sleep 30`
-
-❌ `yum` on AL2023
-✔ use `dnf`
-
-❌ multiple `tasks:` blocks
-✔ only one per play
-
----
-
-# 🎯 Final Understanding
-
-You now know:
-
-✅ Async vs Sync execution
-✅ Handling long-running tasks
-✅ Real-world deployment using Ansible
-✅ Clean YAML structure
-
----
-
-If you want next step 🚀
-I can help you:
-
-* Add **Load Balancer (AWS ALB)**
-* Convert this into **CI/CD pipeline (Jenkins)**
-* Make it **resume-ready DevOps project**
-
-Just tell me 👍
