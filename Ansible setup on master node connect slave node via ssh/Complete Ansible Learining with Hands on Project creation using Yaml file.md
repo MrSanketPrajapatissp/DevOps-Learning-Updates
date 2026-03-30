@@ -1472,4 +1472,171 @@ ansible-vault decrypt secret.txt
 
 ---
 
+Great 👍 — your content had multiple syntax issues, mixed sections, and formatting problems.
+I’ve **cleaned, corrected, and structured it properly** so you can directly use this in your README or project.
+
+---
+
+# ⏳ ASYNCHRONOUS & POLLING (Clean Explanation)
+
+## 📌 Concept
+
+By default, Ansible runs tasks **synchronously**:
+
+➡️ Task 1 → completes → Task 2 starts
+
+But for **long-running tasks** (installations, backups, etc.), this may cause **timeouts**.
+
+---
+
+## 🚀 Solution: Async + Poll
+
+* `async` → maximum time allowed (seconds)
+* `poll` → how often Ansible checks task status
+
+---
+
+## ✅ Correct Playbook (Fixed Syntax)
+
+```yaml
+---
+- name: Async and Poll Playbook
+  hosts: all
+  ignore_errors: yes
+
+  tasks:
+    - name: Simulate long task
+      command: sleep 30
+      async: 20
+      poll: 5
+
+    - name: Install Git
+      dnf:
+        name: git
+        state: present
+```
+
+---
+
+## 🔍 Behavior
+
+| Case                       | Result    |
+| -------------------------- | --------- |
+| Task completes within time | ✅ Success |
+| Task exceeds time          | ❌ Fails   |
+
+---
+
+## 🔄 Fire & Forget Mode
+
+```yaml
+async: 60
+poll: 0
+```
+
+✔ Runs in background
+✔ Ansible does not wait
+
+---
+
+# 🚀 MINI PROJECT: Deploy Application using Ansible
+
+---
+
+## 🎯 Goal
+
+* Install Apache (httpd)
+* Install Git
+* Clone application from GitHub
+* Deploy website
+
+
+---
+
+## ✅ Final Working Playbook (`miniproject.yml`)
+
+```yaml
+---
+- name: Mini Project - Deploy Web Application
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Install HTTPD
+      dnf:
+        name: httpd
+        state: present
+
+    - name: Start HTTPD
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Install Git
+      dnf:
+        name: git
+        state: present
+
+    - name: Clone Code from GitHub
+      git:
+        repo: https://github.com/MrSanketPrajapatissp/amazon-application.git
+        dest: /var/www/html
+        force: yes
+
+    - name: Simulate delay (Async Task)
+      command: sleep 30
+      async: 20
+      poll: 10
+      ignore_errors: yes
+```
+
+---
+
+## ▶️ Run Playbook
+
+```bash
+ansible-playbook -i hosts.ini miniproject.yml
+```
+
+---
+
+## 🌐 Access Application
+
+Open in browser:
+
+```
+http://<EC2_PUBLIC_IP>
+```
+
+---
+
+## 🔍 Verification Commands
+
+```bash
+# Check Apache
+ansible all -a "systemctl status httpd"
+
+# Check files
+ansible all -a "ls /var/www/html"
+
+# Test website
+curl http://<PRIVATE_IP>
+```
+
+---
+# 🎯 Final Understanding
+
+You now know:
+
+✅ Async vs Sync execution
+✅ Handling long-running tasks
+✅ Real-world deployment using Ansible
+✅ Clean YAML structure
+
+---
+
+
+
 
