@@ -1,116 +1,101 @@
-# 📘 Complete Ansible Learning with Hands-On Projects (Amazon Linux 2023)
+---
+# 📘 COMPLETE ANSIBLE GUIDE (Amazon Linux 2023)
+---
 
-Welcome to a structured Ansible learning path designed for beginners to advanced learners.
+## 🏗️ Project Overview
 
-> 💡 **TIP**: Follow chapters in order for best results.
+This guide helps you:
+
+- Setup **Ansible Control Node**
+- Connect to **Managed Client Node**
+- Execute **ALL Ansible Playbooks (Basic → Advanced)**
+- Automate real DevOps tasks
 
 ---
 
-## 🧭 Cross-Chapter Navigation Guide
+## 🖥️ Architecture
 
-- [Chapter 1: Foundation & Setup (🟢 Beginner)](#chapter-1-foundation--setup-beginner)
-- [Chapter 2: Core Concepts & Basic Playbooks (🟢 Beginner)](#chapter-2-core-concepts--basic-playbooks-beginner)
-- [Chapter 3: Advanced Playbook Techniques (🟡 Intermediate)](#chapter-3-advanced-playbook-techniques-intermediate)
-- [Chapter 4: Production-Grade Roles (🟡 Intermediate)](#chapter-4-production-grade-roles-intermediate)
-- [Chapter 5: Real-World Scenarios (🔴 Advanced)](#chapter-5-real-world-scenarios-advanced)
-- [Ansible Command Cheat Sheet](#ansible-command-cheat-sheet)
-- [Final Completion Checklist](#final-completion-checklist)
+| Node   | Role                             |
+| ------ | -------------------------------- |
+| Node A | Control Node (Ansible Installed) |
+| Node B | Managed Node (Client)            |
+
+- OS: Amazon Linux 2023
+- User: `ec2-user`
 
 ---
 
-## Chapter 1: Foundation & Setup (🟢 Beginner)
-**Difficulty:** 🟢 Beginner  
-**Estimated Time:** 45-60 minutes
+# ✅ STEP 1: Prerequisites
 
-### 🎯 Learning Objectives
-- Understand Ansible architecture (Control Node vs Managed Node)
-- Install Ansible on Amazon Linux 2023
-- Configure SSH-based trust for passwordless automation
-- Validate end-to-end host connectivity
+✔ 2 EC2 Instances
+✔ Same VPC
+✔ Security Group:
 
-### 📚 Topic Breakdown
-- Prerequisites (2 EC2 instances, key pair, same network)
-- Control node setup and Ansible installation
-- Inventory file structure (`hosts.ini`)
-- SSH key permissions and connection testing
+- Allow SSH (Port 22)
 
-> ⚠️ **WARNING**: Never use `chmod 777` on private keys. Use `chmod 400 mykey.pem`.
+✔ Key Pair (.pem file)
+✔ Python installed
 
-### 🧪 Hands-On Lab 1: Setup Control Node
+---
 
-#### Steps
-1. Connect to control node.
-2. Install Ansible.
-3. Verify installation.
+# 🔧 STEP 2: Setup Control Node
+
+Login:
 
 ```bash
 ssh -i mykey.pem ec2-user@<CONTROL_NODE_PUBLIC_IP>
+```
+
+Install Ansible:
+
+```bash
 sudo dnf update -y
 sudo dnf install ansible -y
+```
+
+Verify:
+
+```bash
 ansible --version
 ```
 
-### 🧪 Hands-On Lab 2: Configure Inventory + Connectivity Test
+---
 
-#### Create inventory
-```ini
-# hosts.ini
-[clients]
-<PRIVATE_IP_1> ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/mykey.pem
-```
+# 🔐 STEP 3: Configure SSH
 
-#### Test connection
 ```bash
 scp -i mykey.pem mykey.pem ec2-user@<CONTROL_NODE_PUBLIC_IP>:/home/ec2-user/
-chmod 400 /home/ec2-user/mykey.pem
-ansible all -i hosts.ini -m ping
+chmod 400 mykey.pem
 ```
-
-> ✅ **VERIFICATION**: `ping` module should return `"pong"` for managed hosts.
-
-### ✅ Verification Checklist
-- [ ] Ansible installed on control node
-- [ ] `hosts.ini` created with valid private IP
-- [ ] SSH key copied and permission set to `400`
-- [ ] `ansible all -i hosts.ini -m ping` succeeds
-
-### 🛠️ Common Troubleshooting
-
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| `UNREACHABLE` host | Wrong private IP or SG rule | Verify IP and allow SSH (22) |
-| `Permission denied (publickey)` | Wrong key path/permission | Use correct key and `chmod 400` |
-| `python not found` | Python missing on managed node | Install Python on managed node |
-
-### 💼 Interview Q&A Samples
-1. **Q:** What is the difference between control node and managed node?  
-   **A:** Control node runs Ansible; managed nodes receive tasks over SSH.
-2. **Q:** Why is inventory required?  
-   **A:** It defines target hosts and connection variables.
-3. **Q:** Why key permission `400`?  
-   **A:** SSH rejects overly permissive private key files for security.
 
 ---
 
-## Chapter 2: Core Concepts & Basic Playbooks (🟢 Beginner)
-**Difficulty:** 🟢 Beginner  
-**Estimated Time:** 75-90 minutes
+# 📁 STEP 4: Inventory File
 
-### 🎯 Learning Objectives
-- Write and execute your first playbooks
-- Use key modules (`ping`, `dnf`, `service`, `copy`, `user`)
-- Understand idempotency in package/service tasks
-- Deploy and verify a basic web server
+```bash
+vi hosts.ini
+```
 
-### 📚 Topic Breakdown
-- Playbook YAML structure (`hosts`, `become`, `tasks`)
-- Basic modules and task sequencing
-- Service lifecycle management
-- Basic file deployment and user creation
+```ini
+[clients]
+<PRIVATE_IP> ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/mykey.pem
+```
 
-> 💡 **TIP**: Prefer modules (`dnf`, `service`) over raw shell commands for idempotency.
+---
 
-### 🧪 Hands-On Lab 1: Ping Playbook (`pb1.yml`)
+# 🔗 STEP 5: Test Connection
+
+```bash
+ansible all -i hosts.ini -m ping
+```
+
+---
+
+# 📜 STEP 6: PLAYBOOKS (ALL INCLUDED)
+
+---
+
+## 🧪 1. Ping Playbook (`pb1.yml`)
 
 ```yaml
 ---
@@ -121,519 +106,1537 @@ ansible all -i hosts.ini -m ping
       ansible.builtin.ping:
 ```
 
+Run:
+
 ```bash
 ansible-playbook -i hosts.ini pb1.yml
 ```
 
-### 🧪 Hands-On Lab 2: Install and Start Apache (`pb2.yml`)
+---
+
+## 🌐 2. Install Apache (`pb2.yml`)
 
 ```yaml
 ---
-- name: Install and Start Apache
+- name: Install Apache
   hosts: all
   become: yes
+
   tasks:
     - name: Install httpd
-      ansible.builtin.dnf:
+      dnf:
         name: httpd
         state: present
 
-    - name: Start and enable httpd
-      ansible.builtin.service:
+    - name: Start Apache
+      service:
         name: httpd
         state: started
         enabled: yes
+
+    - name: Debug message
+      debug:
+        msg: "Apache Installed"
 ```
 
-```bash
-ansible-playbook -i hosts.ini pb2.yml
-ansible all -i hosts.ini -a "systemctl status httpd"
-```
+---
 
-### 🧪 Hands-On Lab 3: Deploy Static HTML (`pb3.yml`)
+## ❌ 3. Remove Apache (`pb3.yml`)
 
 ```yaml
 ---
-- name: Deploy index page
+- name: Remove Apache
   hosts: all
   become: yes
+
   tasks:
-    - name: Install nginx
-      ansible.builtin.dnf:
-        name: nginx
+    - name: Remove httpd
+      dnf:
+        name: httpd
+        state: absent
+
+    - name: Debug message
+      debug:
+        msg: "Apache Removed"
+```
+
+---
+
+## ⚙️ 4. Apache Setup (`pb4.yml`)
+
+```yaml
+---
+- name: Apache Configuration
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Apache
+      dnf:
+        name: httpd
         state: present
 
-    - name: Ensure nginx running
-      ansible.builtin.service:
-        name: nginx
+    - name: Start Apache
+      service:
+        name: httpd
         state: started
         enabled: yes
 
-    - name: Deploy home page
-      ansible.builtin.copy:
-        dest: /usr/share/nginx/html/index.html
-        content: "<h1>Deployed via Ansible</h1>"
+    - name: Debug message
+      debug:
+        msg: "Apache Installed and Started"
+```
+
+---
+
+## 🐳 5. Install Git & Docker (`pb5.yml`)
+
+```yaml
+---
+- name: Install Git and Docker
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Git
+      dnf:
+        name: git
+        state: present
+
+    - name: Install Docker (moby-engine)
+      dnf:
+        name: moby-engine
+        state: present
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+```
+
+---
+
+## 👤 6. Create User + Copy File
+
+```yaml
+---
+- name: Create User and Copy File
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create user raj
+      user:
+        name: raj
+        state: present
+
+    - name: Copy file
+      copy:
+        src: file.txt
+        dest: /home/ec2-user/file.txt
         mode: "0644"
 ```
 
-```bash
-ansible-playbook -i hosts.ini pb3.yml
-```
-
-> ✅ **VERIFICATION**: Open `http://<MANAGED_NODE_PUBLIC_IP>` and confirm page loads.
-
-### ✅ Verification Checklist
-- [ ] Basic playbook runs without YAML errors
-- [ ] Apache or Nginx service is active
-- [ ] Web page/content deployment succeeds
-- [ ] Re-running playbook shows minimal changes (idempotency)
-
-### 🛠️ Common Troubleshooting
-
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| YAML parser error | Wrong indentation | Use 2-space indentation consistently |
-| `dnf` task fails | Package name mismatch | Verify package name on target OS |
-| Service not starting | Port conflict or install failure | Check logs via `journalctl -u <service>` |
-
-### 💼 Interview Q&A Samples
-1. **Q:** What is idempotency in Ansible?  
-   **A:** Running the same playbook repeatedly should keep desired state without extra changes.
-2. **Q:** Why use `become: yes`?  
-   **A:** It elevates privilege for admin-level tasks like package installation.
-3. **Q:** Module vs shell command?  
-   **A:** Modules are structured, safer, and idempotent; shell is less controlled.
-
 ---
 
-## Chapter 3: Advanced Playbook Techniques (🟡 Intermediate)
-**Difficulty:** 🟡 Intermediate  
-**Estimated Time:** 90-120 minutes
-
-### 🎯 Learning Objectives
-- Use variables, loops, tags, and conditions effectively
-- Implement handlers and templates for controlled changes
-- Run long tasks using async and polling
-- Build maintainable, selective execution workflows
-
-### 📚 Topic Breakdown
-- Static and dynamic variables (`vars`, `--extra-vars`)
-- `loop`, `when`, and `tags`
-- Handlers (`notify`) and service orchestration
-- Jinja2 templates and async execution
-
-> ⚠️ **WARNING**: Avoid hardcoding sensitive values directly in playbooks.
-
-### 🧪 Hands-On Lab 1: Variables + Loops + Tags (`advanced1.yml`)
+## 🌍 7. Install Nginx (`pb6.yml`)
 
 ```yaml
 ---
-- name: Variables, loops, and tags
+- name: Install Nginx
   hosts: all
   become: yes
-  vars:
-    packages:
-      - git
-      - tree
-      - maven
+
   tasks:
-    - name: Install required packages
-      ansible.builtin.dnf:
+    - name: Install nginx
+      dnf:
+        name: nginx
+        state: present
+
+    - name: Start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+```
+
+---
+
+## 🌐 8. Deploy Website (Nginx)
+
+```yaml
+---
+- name: Deploy Website
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install nginx
+      dnf:
+        name: nginx
+        state: present
+
+    - name: Start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Deploy index.html
+      copy:
+        src: index.html
+        dest: /usr/share/nginx/html/index.html
+
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+```
+
+---
+
+## 🖥️ 9. System Info (`pb7.yml`)
+
+```yaml
+---
+- name: System Information
+  hosts: all
+
+  tasks:
+    - name: Print system details
+      debug:
+        msg: >
+          Hostname: {{ ansible_hostname }},
+          OS: {{ ansible_distribution }},
+          CPUs: {{ ansible_processor_vcpus }},
+          Memory: {{ ansible_memtotal_mb }} MB,
+          Package Manager: {{ ansible_pkg_mgr }}
+```
+
+---
+
+## 🏷️ 10. Tags Playbook
+
+```yaml
+---
+- name: Tags Example
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Git
+      dnf:
+        name: git
+        state: present
+      tags: git
+
+    - name: Install Docker
+      dnf:
+        name: moby-engine
+        state: present
+      tags: docker
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+      tags: startdocker
+
+    - name: Create user roxy
+      user:
+        name: roxy
+        state: present
+      tags: user
+```
+
+Run:
+
+```bash
+ansible-playbook tags.yml --tags "git,docker"
+ansible-playbook tags.yml --skip-tags "git"
+```
+
+---
+
+## 🔢 11. Static Variables
+
+```yaml
+---
+- name: Static Variables
+  hosts: all
+  become: yes
+
+  vars:
+    pkg1: git
+    pkg2: maven
+
+  tasks:
+    - name: Install Git
+      dnf:
+        name: "{{ pkg1 }}"
+        state: present
+
+    - name: Install Maven
+      dnf:
+        name: "{{ pkg2 }}"
+        state: present
+```
+
+---
+
+## 🔄 12. Dynamic Variables
+
+```yaml
+---
+- name: Dynamic Variables
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install package A
+      dnf:
+        name: "{{ a }}"
+        state: present
+
+    - name: Install package B
+      dnf:
+        name: "{{ b }}"
+        state: present
+```
+
+Run:
+
+```bash
+ansible-playbook dynamic.yml --extra-vars "a=git b=maven"
+```
+
+---
+
+## 🔁 13. Loop Playbook
+
+```yaml
+---
+- name: Install Multiple Packages
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install packages
+      dnf:
         name: "{{ item }}"
         state: present
-      loop: "{{ packages }}"
-      tags: ["packages"]
+      loop:
+        - git
+        - tree
+        - docker
+        - maven
+        - httpd
+```
 
+---
+
+## 👥 14. Create Users Loop
+
+```yaml
+---
+- name: Create Users
+  hosts: all
+  become: yes
+
+  tasks:
     - name: Create users
-      ansible.builtin.user:
+      user:
         name: "{{ item }}"
         state: present
       loop:
         - maria
-        - roxy
-      tags: ["users"]
+        - riya
+        - raj
+        - raja
+        - tommy
 ```
 
-```bash
-ansible-playbook -i hosts.ini advanced1.yml --tags "packages"
-ansible-playbook -i hosts.ini advanced1.yml --skip-tags "users"
-```
+---
 
-### 🧪 Hands-On Lab 2: Conditions + Handler + Async (`advanced2.yml`)
+## 🔔 15. Handlers
 
 ```yaml
 ---
-- name: Conditional deployment with handler and async
+- name: Apache with Handler
   hosts: all
   become: yes
+
   tasks:
-    - name: Install Apache for RedHat family
-      ansible.builtin.dnf:
+    - name: Install Apache
+      dnf:
         name: httpd
         state: present
-      when: ansible_os_family == "RedHat"
-      notify: Restart Apache
+      notify: Start Apache
 
-    - name: Simulate long task
-      ansible.builtin.command: sleep 20
-      async: 60
-      poll: 5
+  handlers:
+    - name: Start Apache
+      service:
+        name: httpd
+        state: started
+```
+
+---
+
+## ❌ 16. Handler with Ignore Errors
+
+```yaml
+---
+- name: Remove Apache with Handler
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Remove Apache
+      dnf:
+        name: httpd
+        state: absent
+      notify: Restart Apache
 
   handlers:
     - name: Restart Apache
-      ansible.builtin.service:
+      service:
         name: httpd
-        state: restarted
+        state: started
+      ignore_errors: yes
 ```
+
+---
+
+# ▶️ STEP 7: Run Any Playbook
 
 ```bash
-ansible-playbook -i hosts.ini advanced2.yml
+ansible-playbook -i hosts.ini playbook.yml
 ```
 
-### 🧪 Hands-On Lab 3: Jinja2 Template (`template.yml`)
+---
+
+# 🛠️ Troubleshooting
+
+```bash
+# Check connectivity
+ansible all -i hosts.ini -m ping
+
+# SSH check
+ssh -i mykey.pem ec2-user@<PRIVATE_IP>
+
+# Permissions fix
+chmod 400 mykey.pem
+
+# Full system info
+ansible all -m setup
+```
+
+---
+
+# ⚙️ 5. Shell vs Command vs Raw
+
+⚠️ AL2023 Fix:
+
+- Replace `yum` → `dnf`
 
 ```yaml
 ---
-- name: Deploy nginx from template
+- name: Shell vs Command vs Raw
   hosts: all
   become: yes
+
+  tasks:
+    - name: Install Apache using shell
+      shell: dnf install httpd -y
+
+    - name: Install Git using command
+      command: dnf install git -y
+
+    - name: Install Maven using raw
+      raw: dnf install maven -y
+```
+
+---
+
+# 🔀 6. Conditional Playbook (when)
+
+```yaml
+---
+- name: Conditions Example
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Apache on RedHat family
+      dnf:
+        name: httpd
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install Apache on Debian family
+      apt:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
+```
+
+---
+
+# 🧩 7. Jinja2 Template Playbook (Nginx)
+
+⚠️ IMPORTANT for AL2023:
+
+- ❌ remove `amazon-linux-extras`
+- ✅ use direct `dnf`
+
+```yaml
+---
+- name: Deploy Nginx Config using Template
+  hosts: all
+  become: yes
+
   vars:
     nginx_port: 80
-    server_name: "demo.local"
+    server_name: "boom.com"
+    web_root: "/usr/share/nginx/html"
+
   tasks:
-    - name: Install nginx
-      ansible.builtin.dnf:
+    - name: Install Nginx
+      dnf:
         name: nginx
         state: present
 
-    - name: Push nginx template
-      ansible.builtin.template:
+    - name: Copy Nginx Config using Template
+      template:
         src: templates/nginx.conf.j2
         dest: /etc/nginx/nginx.conf
 
-    - name: Restart nginx
-      ansible.builtin.service:
+    - name: Start Nginx
+      service:
         name: nginx
-        state: restarted
+        state: started
         enabled: yes
 ```
 
-```jinja2
-# templates/nginx.conf.j2
-events {}
-http {
-  server {
-    listen {{ nginx_port }};
-    server_name {{ server_name }};
-    location / {
-      root /usr/share/nginx/html;
-      index index.html;
-    }
-  }
-}
-```
-
-### ✅ Verification Checklist
-- [ ] Selective task execution via tags works
-- [ ] Conditional tasks run on expected OS only
-- [ ] Handler triggers only when change occurs
-- [ ] Template renders expected values
-
-### 🛠️ Common Troubleshooting
-
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| Tag execution runs nothing | Tag mismatch | Check exact tag names in playbook |
-| Condition not executed | Incorrect fact usage | Run `ansible all -m setup` to inspect facts |
-| Template error | Missing variable | Validate all template variables are defined |
-
-### 💼 Interview Q&A Samples
-1. **Q:** What is the role of handlers?  
-   **A:** They run only when notified by changed tasks, useful for controlled restarts.
-2. **Q:** Difference between static and dynamic variables?  
-   **A:** Static are in playbook/files; dynamic are passed at runtime (e.g., `--extra-vars`).
-3. **Q:** Why use tags?  
-   **A:** To run targeted parts of a large playbook quickly.
-
 ---
 
-## Chapter 4: Production-Grade Roles (🟡 Intermediate)
-**Difficulty:** 🟡 Intermediate  
-**Estimated Time:** 90-120 minutes
+# 🧱 8. Roles Structure (Production Standard)
 
-### 🎯 Learning Objectives
-- Structure automation with reusable roles
-- Separate concerns across package, user, and webserver setup
-- Use a master playbook to orchestrate multiple roles
-- Verify and troubleshoot role-based deployments
-
-### 📚 Topic Breakdown
-- Standard role directory layout
-- `tasks/main.yml` design per role
-- Master playbook orchestration
-- Validation and rollback basics
-
-> 💡 **TIP**: Keep each role focused on one responsibility for maintainability.
-
-### 🧪 Hands-On Lab 1: Build Roles Directory + Task Files
+## 📁 Folder Structure
 
 ```bash
-mkdir -p roles/pkgs/tasks
-mkdir -p roles/users/tasks
-mkdir -p roles/webserver/tasks
+roles/
+ ├── pkgs/
+ │    └── tasks/
+ │         └── main.yml
+ ├── users/
+ ├── webserver/
 ```
 
+---
+
+## 📦 roles/pkgs/tasks/main.yml
+
 ```yaml
-# roles/pkgs/tasks/main.yml
 ---
 - name: Install packages
-  ansible.builtin.dnf:
+  dnf:
     name: "{{ item }}"
     state: present
   loop:
     - git
     - tree
+    - docker
     - maven
-    - moby-engine
 ```
 
-```yaml
-# roles/users/tasks/main.yml
 ---
-- name: Create users
-  ansible.builtin.user:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - puneeth
-    - roxy
-    - rajesh
-```
+
+## 🎯 master.yml
 
 ```yaml
-# roles/webserver/tasks/main.yml
 ---
-- name: Install Apache
-  ansible.builtin.dnf:
-    name: httpd
-    state: present
-
-- name: Ensure Apache is running
-  ansible.builtin.service:
-    name: httpd
-    state: started
-    enabled: yes
-```
-
-### 🧪 Hands-On Lab 2: Master Playbook + Execution
-
-```yaml
-# master.yml
----
-- name: Execute all production roles
+- name: Master Playbook
   hosts: all
   become: yes
+
   roles:
     - pkgs
     - users
     - webserver
 ```
 
-```bash
-ansible-playbook -i hosts.ini master.yml
-ansible all -i hosts.ini -a "rpm -qa | grep -E 'git|maven|httpd|moby-engine'"
-ansible all -i hosts.ini -a "systemctl status httpd"
+---
+
+# ⏳ 9. Async & Polling
+
+```yaml
+---
+- name: Long Running Task Example
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install heavy software
+      dnf:
+        name: httpd
+        state: present
+      async: 300
+      poll: 10
 ```
-
-### ✅ Verification Checklist
-- [ ] Roles directory structure created correctly
-- [ ] Each role runs independently without errors
-- [ ] `master.yml` executes all roles end-to-end
-- [ ] Users, packages, and web service verified on hosts
-
-### 🛠️ Common Troubleshooting
-
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| Role not found | Wrong role folder name/path | Ensure `roles/<role_name>/tasks/main.yml` exists |
-| Docker package not found | Using wrong package name on AL2023 | Use `moby-engine` instead of `docker` |
-| Master playbook fails halfway | One role task failure | Run with `-vvv`, test role individually |
-
-### 💼 Interview Q&A Samples
-1. **Q:** Why use roles in production?  
-   **A:** Roles improve reusability, modularity, and team collaboration.
-2. **Q:** What is separation of concerns in Ansible?  
-   **A:** Split responsibilities (packages/users/webserver) into independent roles.
-3. **Q:** How do you execute selected roles?  
-   **A:** Use tags at role/task level or separate playbooks.
 
 ---
 
-## Chapter 5: Real-World Scenarios (🔴 Advanced)
-**Difficulty:** 🔴 Advanced  
-**Estimated Time:** 120-150 minutes
+---
 
-### 🎯 Learning Objectives
-- Apply Ansible to real deployment and operations workflows
-- Secure sensitive values with Ansible Vault
-- Implement uninstall/rollback patterns safely
-- Validate deployment and recovery outcomes
+# 🚀 Final Tip
 
-### 📚 Topic Breakdown
-- End-to-end application deployment automation
-- Vault encryption, edit, view, and run patterns
-- Bulk uninstall and environment reset strategy
-- Production verification and rollback readiness
+Run any playbook:
 
-> ⚠️ **WARNING**: Never hardcode vault passwords in source-controlled files.
+```bash
+ansible-playbook -i hosts.ini playbook.yml
+```
 
-### 🧪 Hands-On Lab 1: Mini Project Deployment (`miniproject.yml`)
+Dynamic variables:
+
+```bash
+ansible-playbook dynamicvar.yml --extra-vars "a=git b=maven"
+```
+
+---
+
+Great 👍 — let’s **continue your README.md** and properly convert your **Ansible Roles (pkgs, users, webserver)** into **clean, executable, Amazon Linux 2023 compatible code**.
+
+I’ve fixed:
+
+- ❌ `yum` → ✅ `dnf`
+- ❌ wrong syntax (`item}}`, `state—present`)
+- ❌ `with_items` → ✅ `loop`
+- ❌ indentation errors
+- ❌ service typo (`startedl`)
+- ✅ made roles production-ready
+
+---
+
+# 📘 STEP 8: ANSIBLE ROLES (BEST PRACTICE)
+
+Roles help organize playbooks into reusable components.
+
+---
+
+## 📁 Directory Structure
+
+Create roles:
+
+```bash id="n1trj1"
+mkdir -p roles/pkgs/tasks
+mkdir -p roles/users/tasks
+mkdir -p roles/webserver/tasks
+```
+
+---
+
+# 📦 ROLE 1: Install Packages (pkgs)
+
+## 📄 File: `roles/pkgs/tasks/main.yml`
+
+```yaml id="0wjxwy"
+---
+- name: Install Packages
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - tree
+    - docker
+    - maven
+```
+
+---
+
+# 👥 ROLE 2: Create Users (users)
+
+⚠️ Fixed:
+
+- spaces in usernames (`raj esh` ❌ → `rajesh` ✅)
+
+## 📄 File: `roles/users/tasks/main.yml`
+
+```yaml id="5s8v1q"
+---
+- name: Create Users
+  user:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - puneeth
+    - roxy
+    - rajesh
+    - maria
+    - mark
+```
+
+---
+
+# 🌐 ROLE 3: Web Server (webserver)
+
+⚠️ Fixed:
+
+- `yum` → `dnf`
+- wrong syntax
+- service typo
+
+## 📄 File: `roles/webserver/tasks/main.yml`
+
+```yaml id="axtq9v"
+---
+- name: Install Apache Web Server
+  dnf:
+    name: httpd
+    state: present
+
+- name: Start and Enable Apache
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+```
+
+---
+
+# 🎯 STEP 9: CREATE MASTER PLAYBOOK
+
+## 📄 File: `master.yml`
+
+```yaml id="lhn1s2"
+---
+- name: Execute All Roles
+  hosts: all
+  become: yes
+
+  roles:
+    - pkgs
+    - users
+    - webserver
+```
+
+---
+
+# ▶️ STEP 10: RUN ROLES
+
+```bash id="6k1bt1"
+ansible-playbook -i hosts.ini master.yml
+```
+
+---
+
+# 🔍 VERIFY OUTPUT
+
+---
+
+## ✅ Check Installed Packages
+
+```bash id="ukd1t8"
+ansible all -a "rpm -qa | grep -E 'git|docker|httpd|maven'"
+```
+
+---
+
+## ✅ Check Users
+
+```bash id="5t7lkn"
+ansible all -a "cat /etc/passwd"
+```
+
+---
+
+## ✅ Check Apache Service
+
+```bash id="m80d6g"
+ansible all -a "systemctl status httpd"
+```
+
+---
+
+# 🛠️ TROUBLESHOOTING
+
+---
+
+## ❌ If Docker not found (AL2023)
+
+```bash id="xkh41z"
+dnf install moby-engine -y
+```
+
+---
+
+## ❌ Permission Issue
+
+```bash id="f7xgok"
+chmod 400 mykey.pem
+```
+
+---
+
+## ❌ Connection Issue
+
+```bash id="6c83ep"
+ansible all -i hosts.ini -m ping
+```
+
+---
+
+# 🚀 FINAL RESULT
+
+After completing this:
+
+✅ Roles structure implemented
+✅ Packages installed automatically
+✅ Users created
+✅ Apache web server deployed
+✅ Production-ready Ansible structure
+
+---
+
+# 🔥 BONUS (INTERVIEW POINTS)
+
+- Roles = reusable + scalable architecture
+- `loop` replaces `with_items`
+- AL2023 uses `dnf`
+- Separation of concerns (pkgs, users, webserver)
+- Master playbook controls everything
+
+
+---
+# 🧹 STEP 11: Uninstall Everything (Bulk Change in Playbooks)
+
+Sometimes you want to **remove all installed packages/users/services** using the same playbooks.
+
+Instead of manually editing each file ❌
+We use **automation (sed + find)** ✅
+
+---
+
+## 🔁 🔹 Method 1: Modify Single File
+
+Example (for one file):
+
+```bash
+sed -i 's/present/absent/g' roles/pkgs/tasks/main.yml
+```
+
+### 📌 What it does:
+
+- `present` ➝ `absent`
+- Converts **install → uninstall**
+
+---
+
+## 🔁 🔹 Method 2: Modify ALL Playbooks (Recommended 🚀)
+
+```bash
+find . -type f -name "*.yml" -exec sed -i 's/present/absent/g' {} \;
+```
+
+---
+
+## 🔍 Explanation (Important for Interview)
+
+### 🔹 `find .`
+
+- Search in **current directory**
+
+### 🔹 `-type f`
+
+- Select only **files** (not folders)
+
+### 🔹 `-name "*.yml"`
+
+- Target only **Ansible playbooks**
+
+### 🔹 `-exec`
+
+- Execute command on each file
+
+### 🔹 `sed -i`
+
+- Edit file **in-place**
+
+### 🔹 `'s/present/absent/g'`
+
+- Replace:
+  - `present` ➝ `absent`
+  - `g` = global (all occurrences)
+
+### 🔹 `{}`
+
+- Represents each file found
+
+### 🔹 `\;`
+
+- Ends the exec command
+
+---
+
+## ⚠️ Important Tip
+
+Before running, check files:
+
+```bash
+find . -type f -name "*.yml"
+```
+
+---
+
+## ▶️ STEP 12: Run Playbook (Uninstall Mode)
+
+After replacing `present → absent`:
+
+```bash
+ansible-playbook -i hosts.ini master.yml
+```
+
+---
+
+## ✅ Expected Result
+
+All resources will be removed:
+
+- ❌ Apache removed
+- ❌ Nginx removed
+- ❌ Docker removed
+- ❌ Git removed
+- ❌ Users removed
+
+---
+
+## 🔍 Verification
+
+### Check packages removed:
+
+```bash
+ansible all -a "rpm -qa | grep httpd"
+```
+
+### Check users removed:
+
+```bash
+ansible all -a "cat /etc/passwd"
+```
+
+---
+
+## ⚠️ Common Mistakes
+
+❌ Wrong command:
+
+```bash
+find . -type f = -exec
+```
+
+✅ Correct:
+
+```bash
+find . -type f -exec sed -i 's/present/absent/g' {} \;
+```
+
+---
+
+## 🚀 Pro Tip (Safe Execution)
+
+Take backup before replacing:
+
+```bash
+cp -r roles roles_backup
+```
+
+---
+
+# 🎯 Final Concept
+
+This step shows:
+
+✔ Idempotency in Ansible
+✔ Bulk automation using Linux commands
+✔ Real DevOps troubleshooting skills
+
+
+---
+
+# 🧹 STEP 13: Uninstall All Using Roles (Final Execution)
+
+After modifying all role files:
+
+```bash
+present → absent
+```
+
+You can use the **same master playbook** to remove everything.
+
+---
+
+## ▶️ Run Master Playbook
+
+```bash
+ansible-playbook -i hosts.ini master.yml
+```
+
+---
+
+## 🔄 What Happens Internally
+
+Your roles were earlier doing:
+
+```yaml
+state: present
+```
+
+Now after replacement:
+
+```yaml
+state: absent
+```
+
+So Ansible will:
+
+| Role      | Action                                        |
+| --------- | --------------------------------------------- |
+| pkgs      | Uninstall packages (git, docker, maven, etc.) |
+| users     | Delete users                                  |
+| webserver | Remove Apache (httpd)                         |
+
+---
+
+## 📦 Example (After Replacement)
+
+### pkgs role:
+
+```yaml
+- name: Install Packages
+  dnf:
+    name: "{{ item }}"
+    state: absent
+```
+
+---
+
+### users role:
+
+```yaml
+- name: Create Users
+  user:
+    name: "{{ item }}"
+    state: absent
+```
+
+---
+
+### webserver role:
+
+```yaml
+- name: Install Apache
+  dnf:
+    name: httpd
+    state: absent
+```
+
+---
+
+## ✅ Expected Output
+
+When you run:
+
+```bash
+ansible-playbook -i hosts.ini master.yml
+```
+
+You will see:
+
+- Packages → **REMOVED**
+- Users → **DELETED**
+- Services → **STOPPED / REMOVED**
+
+---
+
+## 🔍 Verification
+
+### Check packages removed:
+
+```bash
+ansible all -a "rpm -qa | grep httpd"
+```
+
+---
+
+### Check users removed:
+
+```bash
+ansible all -a "cat /etc/passwd"
+```
+
+---
+
+### Check service status:
+
+```bash
+ansible all -a "systemctl status httpd"
+```
+
+---
+
+## ⚠️ Important Note
+
+Ansible is **idempotent**, meaning:
+
+- If already removed → no changes
+- Safe to run multiple times
+
+---
+
+## 🚀 Real DevOps Insight
+
+This pattern is used in industry for:
+
+✔ Rollback deployments
+✔ Cleanup infrastructure
+✔ Environment reset
+✔ Disaster recovery
+
+
+
+---
+
+# 🔐 STEP 14: Secure Secrets using Ansible Vault
+
+Ansible Vault is used to **encrypt sensitive data** like:
+
+- Database passwords
+- API keys
+- Credentials
+
+---
+
+## 📄 1. Create Encrypted File
+
+```bash
+ansible-vault create secret.txt
+```
+
+### 🔑 Enter Password:
+
+```
+New Vault password: root123
+Confirm New Vault password: root123
+```
+
+---
+
+## ✍️ Add Content Inside File
+
+```ini
+db_username=admin
+db_password=hell@143
+```
+
+Save and exit (`ESC + :wq`)
+
+---
+
+## 🔍 2. View Encrypted File
+
+```bash
+cat secret.txt
+```
+
+### Output (Encrypted):
+
+```
+$ANSIBLE_VAULT;1.1;AES256
+3132333435...
+```
+
+✔ Data is **fully encrypted**
+
+---
+
+## ✏️ 3. Edit Encrypted File
+
+```bash
+ansible-vault edit secret.txt
+```
+
+Enter password:
+
+```
+Vault password: root123
+```
+
+✔ File opens in decrypted mode for editing
+
+---
+
+## 🔓 4. Decrypt File
+
+```bash
+ansible-vault decrypt secret.txt
+```
+
+Now check:
+
+```bash
+cat secret.txt
+```
+
+### Output:
+
+```ini
+db_username=admin
+db_password=hell@143
+```
+
+---
+
+## 🔒 5. Encrypt Again
+
+```bash
+ansible-vault encrypt secret.txt
+```
+
+---
+
+# 🔐 Using Vault in Playbook (IMPORTANT)
+
+---
+
+## 📄 Example Playbook with Vault
+
+```yaml
+---
+- name: Use Vault Variables
+  hosts: all
+  vars_files:
+    - secret.txt
+
+  tasks:
+    - name: Print DB Username
+      debug:
+        msg: "{{ db_username }}"
+```
+
+---
+
+## ▶️ Run Playbook with Vault
+
+```bash
+ansible-playbook playbook.yml --ask-vault-pass
+```
+
+---
+
+# 🔑 Alternative (Better Practice)
+
+Use password file:
+
+```bash
+echo "root123" > vault_pass.txt
+chmod 600 vault_pass.txt
+```
+
+Run:
+
+```bash
+ansible-playbook playbook.yml --vault-password-file vault_pass.txt
+```
+
+---
+
+# ⚠️ Common Mistakes
+
+❌ Wrong command:
+
+```bash
+ansible-vault edit secret .txt
+```
+
+✅ Correct:
+
+```bash
+ansible-vault edit secret.txt
+```
+
+---
+
+❌ Wrong spacing:
+
+```bash
+ansible-vault decrypt secret .txt
+```
+
+✅ Correct:
+
+```bash
+ansible-vault decrypt secret.txt
+```
+
+
+---
+
+# 🎯 Final Outcome
+
+You now know:
+
+✅ Encrypt sensitive data
+✅ Edit securely
+✅ Use secrets in playbooks
+✅ Follow real DevOps security practices
+
+
+---
+
+# 👀 STEP 15: View Encrypted File (Without Decrypting)
+
+If you want to **read the contents of an encrypted file without decrypting it permanently**, use:
+
+```bash
+ansible-vault view secret.txt
+```
+
+---
+
+## 🔑 Enter Password
+
+```text
+Vault password: root123
+```
+
+---
+
+## 📄 Output (Decrypted View)
+
+```ini
+db_username=admin
+db_password=hell@143
+```
+
+✔ File is **NOT decrypted on disk**
+✔ It is only **temporarily shown in memory**
+
+---
+
+## 🔍 When to Use `view`
+
+Use this command when:
+
+- You just want to **check secrets quickly**
+- You don’t want to **expose the file permanently**
+- You are debugging a playbook
+
+---
+
+## 🔄 Comparison of Vault Commands
+
+| Command                 | Purpose                 |
+| ----------------------- | ----------------------- |
+| `ansible-vault create`  | Create encrypted file   |
+| `ansible-vault edit`    | Edit securely           |
+| `ansible-vault view`    | View without decrypting |
+| `ansible-vault decrypt` | Permanently decrypt     |
+| `ansible-vault encrypt` | Encrypt file            |
+
+---
+
+## ⚠️ Important Note
+
+- `view` is **safer than decrypt**
+- File remains encrypted after viewing
+
+---
+
+## 🚀 Pro Tip
+
+Instead of exposing secrets:
+
+```bash
+ansible-vault view secret.txt
+```
+
+❌ Avoid:
+
+```bash
+ansible-vault decrypt secret.txt
+```
+
+(only use decrypt when really needed)
+
+---
+
+Great 👍 — your content had multiple syntax issues, mixed sections, and formatting problems.
+I’ve **cleaned, corrected, and structured it properly** so you can directly use this in your README or project.
+
+---
+
+# ⏳ ASYNCHRONOUS & POLLING (Clean Explanation)
+
+## 📌 Concept
+
+By default, Ansible runs tasks **synchronously**:
+
+➡️ Task 1 → completes → Task 2 starts
+
+But for **long-running tasks** (installations, backups, etc.), this may cause **timeouts**.
+
+---
+
+## 🚀 Solution: Async + Poll
+
+* `async` → maximum time allowed (seconds)
+* `poll` → how often Ansible checks task status
+
+---
+
+## ✅ Correct Playbook (Fixed Syntax)
+
+```yaml
+---
+- name: Async and Poll Playbook
+  hosts: all
+  ignore_errors: yes
+
+  tasks:
+    - name: Simulate long task
+      command: sleep 30
+      async: 20
+      poll: 5
+
+    - name: Install Git
+      dnf:
+        name: git
+        state: present
+```
+
+---
+
+## 🔍 Behavior
+
+| Case                       | Result    |
+| -------------------------- | --------- |
+| Task completes within time | ✅ Success |
+| Task exceeds time          | ❌ Fails   |
+
+---
+
+## 🔄 Fire & Forget Mode
+
+```yaml
+async: 60
+poll: 0
+```
+
+✔ Runs in background
+✔ Ansible does not wait
+
+---
+
+# 🚀 MINI PROJECT: Deploy Application using Ansible
+
+---
+
+## 🎯 Goal
+
+* Install Apache (httpd)
+* Install Git
+* Clone application from GitHub
+* Deploy website
+
+
+---
+
+## ✅ Final Working Playbook (`miniproject.yml`)
 
 ```yaml
 ---
 - name: Mini Project - Deploy Web Application
   hosts: all
   become: yes
+
   tasks:
+
     - name: Install HTTPD
-      ansible.builtin.dnf:
+      dnf:
         name: httpd
         state: present
 
     - name: Start HTTPD
-      ansible.builtin.service:
+      service:
         name: httpd
         state: started
         enabled: yes
 
     - name: Install Git
-      ansible.builtin.dnf:
+      dnf:
         name: git
         state: present
 
-    - name: Clone app source
-      ansible.builtin.git:
+    - name: Clone Code from GitHub
+      git:
         repo: https://github.com/MrSanketPrajapatissp/amazon-application.git
         dest: /var/www/html
         force: yes
+
+    - name: Simulate delay (Async Task)
+      command: sleep 30
+      async: 20
+      poll: 10
+      ignore_errors: yes
 ```
+
+---
+
+## ▶️ Run Playbook
 
 ```bash
 ansible-playbook -i hosts.ini miniproject.yml
-curl http://<MANAGED_NODE_PRIVATE_IP>
-```
-
-### 🧪 Hands-On Lab 2: Secure Secrets with Vault
-
-```bash
-ansible-vault create secret.yml
-ansible-vault view secret.yml
-ansible-vault edit secret.yml
-```
-
-```yaml
-# secret.yml (inside vault)
-db_username: admin
-db_password: "StrongPasswordHere"
-```
-
-```yaml
-# vault-playbook.yml
----
-- name: Use vault values safely
-  hosts: all
-  vars_files:
-    - secret.yml
-  tasks:
-    - name: Print username
-      ansible.builtin.debug:
-        msg: "{{ db_username }}"
-```
-
-```bash
-ansible-playbook -i hosts.ini vault-playbook.yml --ask-vault-pass
-```
-
-### 🧪 Hands-On Lab 3: Controlled Cleanup / Rollback
-
-```bash
-# Backup role folder before replacement
-cp -r roles roles_backup
-
-# Convert install state to uninstall state in all role playbooks
-find roles -type f -name "*.yml" -exec sed -i 's/state: present/state: absent/g' {} \;
-
-# Re-run master playbook to remove resources
-ansible-playbook -i hosts.ini master.yml
-```
-
-> ✅ **VERIFICATION**: Confirm packages/users/services are removed and hosts are clean.
-
-### ✅ Verification Checklist
-- [ ] Mini-project website deployment succeeds
-- [ ] Vault file remains encrypted at rest
-- [ ] Playbook using vault variables runs successfully
-- [ ] Cleanup process removes target resources safely
-
-### 🛠️ Common Troubleshooting
-
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| Vault decryption error | Wrong vault password | Re-run with correct password/file |
-| App not loading after deploy | Service not running / wrong path | Check `httpd` status and `/var/www/html` content |
-| Rollback removed too much | Broad `sed` replacement | Scope to roles only and keep backup |
-
-### 💼 Interview Q&A Samples
-1. **Q:** Why use Ansible Vault?  
-   **A:** To securely store secrets in encrypted files while keeping automation code shareable.
-2. **Q:** How do you design rollback in Ansible?  
-   **A:** Maintain reversible desired states, backups, and validated cleanup playbooks.
-3. **Q:** Production readiness checks after deployment?  
-   **A:** Service health, app response, logs, and idempotent re-run behavior.
-
----
-
-## Ansible Command Cheat Sheet
-
-```bash
-# Inventory ping test
-ansible all -i hosts.ini -m ping
-
-# Run playbook
-ansible-playbook -i hosts.ini playbook.yml
-
-# Run with extra vars
-ansible-playbook -i hosts.ini dynamic.yml --extra-vars "a=git b=maven"
-
-# Run selected tags
-ansible-playbook -i hosts.ini site.yml --tags "packages"
-
-# Skip tags
-ansible-playbook -i hosts.ini site.yml --skip-tags "users"
-
-# Gather full facts
-ansible all -i hosts.ini -m setup
-
-# Vault operations
-ansible-vault create secret.yml
-ansible-vault view secret.yml
-ansible-vault edit secret.yml
-ansible-playbook -i hosts.ini vault-playbook.yml --ask-vault-pass
 ```
 
 ---
 
-## Final Completion Checklist
+## 🌐 Access Application
 
-- [ ] Chapter 1 completed: setup and SSH connectivity verified
-- [ ] Chapter 2 completed: basic playbooks executed successfully
-- [ ] Chapter 3 completed: variables/loops/tags/handlers/templates practiced
-- [ ] Chapter 4 completed: roles and master playbook implemented
-- [ ] Chapter 5 completed: real deployment + vault + rollback practiced
-- [ ] All verification checklists passed
-- [ ] Troubleshooting scenarios tested
-- [ ] Interview Q&A reviewed and practiced
+Open in browser:
+
+```
+http://<EC2_PUBLIC_IP>
+```
 
 ---
 
-🎉 You now have a complete, chapter-based Ansible roadmap from beginner setup to advanced real-world automation.
+## 🔍 Verification Commands
+
+```bash
+# Check Apache
+ansible all -a "systemctl status httpd"
+
+# Check files
+ansible all -a "ls /var/www/html"
+
+# Test website
+curl http://<PRIVATE_IP>
+```
+
+---
+# 🎯 Final Understanding
+
+You now know:
+
+✅ Async vs Sync execution
+✅ Handling long-running tasks
+✅ Real-world deployment using Ansible
+✅ Clean YAML structure
+
+---
+
+
+
+
