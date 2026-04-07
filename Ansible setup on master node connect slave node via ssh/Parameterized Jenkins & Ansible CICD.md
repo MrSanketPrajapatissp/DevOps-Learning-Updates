@@ -1,5 +1,3 @@
----
-
 #  Parameterized Jenkins & Ansible CI/CD (2026 Edition)
 
 ## ## 1. Prerequisites
@@ -18,7 +16,8 @@ To enable parameters, you must check **"This project is parameterized"** in the 
 ### **A. String/Choice Parameter (Environment)**
 
 - **Name:** `server`
-- **Choices:** \* `dev`
+- **Choices:**
+  - `dev`
   - `test`
   - `prod`
 
@@ -75,7 +74,7 @@ pipeline {
 
 | Legacy Issue (2025)             | 2026 Modern Fix                                                                                           |
 | :------------------------------ | :-------------------------------------------------------------------------------------------------------- |
-| **Variable interpolation fail** | Use double quotes `"${params.var}"`. Single quotes `'${var}'` treat the variable as literal text.         |
+| **Variable interpolation fail** | Use double quotes ""${params.var}"". Single quotes '${var}' treat the variable as literal text.         |
 | **Branch not found**            | Ensure the AI or developer hasn't renamed `master` to `main` in the source repo; verify branch naming.    |
 | **Inventory Mismatch**          | Ensure the groups in `/etc/ansible/hosts` (e.g., `[prod]`, `[dev]`) exactly match your choice parameters. |
 
@@ -92,12 +91,12 @@ Instead of a static choice parameter, engineers use **AI Agents** that query AWS
 ### **GitHub Copilot Workspace Integration**
 
 - **Refactoring:** Copilot can take an old Scripted Pipeline and automatically convert it to this modern **Declarative** syntax.
-- **Security Scanning:** AI agents scan your `deploy.yml` for hardcoded secrets or insecure vault paths and suggest using **HashiCorp Vault** or Jenkins Credentials binding instead of plain text paths.
+- **Security Scanning:** AI agents scan your `deploy.yml` for hardcoded secrets or insecure vault paths and suggest using **HashiCorp Vault** or Jenkins Credentials binding instead of plain text passwords.
 
 ### **Automated Branch Validation**
 
-AI-driven pipelines now perform a "Pre-flight check" on the selected `${params.branch}`. If the AI detects a build failure in that branch’s history, it will block the manual deployment to `prod` and suggest a fix.
+AI-driven pipelines now perform a "Pre-flight check" on the selected `${params.branch}`. If the AI detects a build failure in that branch's history, it will block the manual deployment to `prod`.
 
 ---
 
-> **Pro-Tip:** When using `$server` in the `limit` field, always ensure your Ansible Inventory file is structured with headers like `[dev]`, `[test]`, and `[prod]` so the parameter maps correctly.
+> **Pro-Tip:** When using `${params.server}` in the `limit` field, always ensure your Ansible Inventory file is structured with headers like `[dev]`, `[test]`, and `[prod]` so the parameter maps correctly to your infrastructure groups.
